@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LWTC Training</title>
+<meta name="description" content="Professional development trainings for Lorenzo Walker Technical College faculty and staff.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* LWTC brand tokens (LWTC Brand Style Sheet). Text on a brand hue is
+   always set in the wordmark ink, because the hues do not reach 4.5:1 with white. */
+:root{
+  --ink:#231F20; --white:#FFFFFF; --ink-muted:#5F5B5C; --line:rgba(35,31,32,.16);
+  --orange-a:#F58220; --orange-b:#F05A2B;
+  --green-a:#BDD14F;  --green-b:#6EA141;
+  --gold-a:#FFC45A;   --gold-b:#F9A03C;
+  --blue-a:#54ADC3;   --blue-b:#3A7B96;
+  --s1:4px; --s2:8px; --s3:16px; --s4:24px; --s5:48px;
+  --r1:4px; --r2:12px; --r3:48px;
+  --display:'Neue Aachen Pro','NeueAachenPro-Bold','Alfa Slab One','Clarendon Black',Rockwell,'Roboto Slab',Georgia,serif;
+  --text:'Source Sans 3','Source Sans Pro',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --max:1120px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--white);color:var(--ink);font-family:var(--text);font-size:18px;line-height:1.55;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.1}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--s4)}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.site-footer :focus-visible{outline-color:var(--white)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:var(--s3);top:-100px;background:var(--ink);color:var(--white);padding:var(--s2) var(--s3);border-radius:var(--r1);z-index:10}
+.skip:focus{top:var(--s3)}
+
+/* Speech-bubble shape: a pill with one square corner (buttons and tags) */
+.btn,.tag{border-radius:var(--r3) var(--r3) var(--r3) 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:var(--s2) var(--s4);
+  font:700 17px/1.2 var(--text);text-decoration:none;cursor:pointer;border:2px solid var(--ink);
+  background:var(--ink);color:var(--white);transition:background .15s,color .15s}
+.btn:hover{background:var(--white);color:var(--ink)}
+.btn.quiet{background:var(--white);color:var(--ink)}
+.btn.quiet:hover{background:var(--ink);color:var(--white)}
+.btn.small{min-height:40px;padding:var(--s1) var(--s3);font-size:15px}
+.tag{display:inline-block;padding:var(--s1) var(--s3);font-weight:700;font-size:16px;color:var(--ink)}
+.tag.current{background:linear-gradient(90deg,var(--green-a),var(--green-b))}
+.tag.upcoming{background:linear-gradient(90deg,var(--gold-a),var(--gold-b))}
+
+/* Header */
+.site-header{border-bottom:1px solid var(--line)}
+.site-header .wrap{display:flex;align-items:center;gap:var(--s4);padding-top:var(--s3);padding-bottom:var(--s3)}
+.brand{display:flex;align-items:center;text-decoration:none}
+.brand img{height:56px;width:auto}
+.wordmark{display:flex;flex-direction:column;line-height:1.05}
+.wordmark strong{font-family:var(--display);font-weight:400;font-size:34px}
+.wordmark span{font-size:13px;font-weight:600}
+.site-name{font-family:var(--display);font-size:1.5rem;padding-left:var(--s4);border-left:2px solid var(--line)}
+
+/* Featured training */
+.hero{padding:var(--s5) 0}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.7fr);gap:var(--s5);align-items:center}
+.when-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3);margin-bottom:var(--s3)}
+.when{font-weight:600}
+.rel{color:var(--ink-muted);font-weight:600}
+.hero h1{font-size:clamp(2.3rem,5vw,3.8rem);margin-bottom:var(--s3)}
+.hero .lead{font-size:clamp(1.1rem,1.6vw,1.3rem);max-width:36em;margin-bottom:var(--s3)}
+.meta{list-style:none;display:flex;flex-wrap:wrap;gap:var(--s1) 0;margin-bottom:var(--s4);font-weight:600;font-size:16px}
+.meta li{padding:0 var(--s3);border-left:2px solid var(--line)}
+.meta li:first-child{padding-left:0;border-left:0}
+.meta:empty{display:none}
+
+/* Bubble cluster: each square corner points to the center, as in the logo */
+.cluster{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2);width:100%;max-width:300px;justify-self:center}
+.cluster span{aspect-ratio:1;display:block;animation:pop .6s cubic-bezier(.2,1.35,.4,1) both}
+.cluster .orange{border-radius:50% 50% 0 50%;background:linear-gradient(90deg,var(--orange-a),var(--orange-b));transform-origin:100% 100%}
+.cluster .green{border-radius:50% 50% 50% 0;background:linear-gradient(90deg,var(--green-a),var(--green-b));transform-origin:0 100%;animation-delay:.08s}
+.cluster .gold{border-radius:50% 0 50% 50%;background:linear-gradient(90deg,var(--gold-a),var(--gold-b));transform-origin:100% 0;animation-delay:.16s}
+.cluster .blue{border-radius:0 50% 50% 50%;background:linear-gradient(90deg,var(--blue-a),var(--blue-b));transform-origin:0 0;animation-delay:.24s}
+@keyframes pop{from{transform:scale(.55);opacity:0}to{transform:scale(1);opacity:1}}
+
+.notice{max-width:36em}
+.notice h1{font-size:clamp(1.8rem,4vw,2.6rem)}
+
+/* Earlier trainings */
+.earlier{padding:var(--s5) 0;border-top:1px solid var(--line)}
+.earlier h2{font-size:clamp(1.7rem,3.2vw,2.3rem);margin-bottom:var(--s4)}
+.rows{list-style:none;border-bottom:1px solid var(--line)}
+.row{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:var(--s4);align-items:start;padding:var(--s4) 0;border-top:1px solid var(--line)}
+.row-date{font-weight:700;padding-top:2px}
+.row h3{font-size:clamp(1.3rem,2.2vw,1.65rem);margin-bottom:var(--s2)}
+.row p{max-width:42em;color:var(--ink-muted);margin-bottom:var(--s2)}
+.row .tag{margin-bottom:var(--s2)}
+.row .meta{margin:0}
+
+/* Footer */
+.site-footer{background:var(--ink);color:var(--white);padding:var(--s5) 0 var(--s4)}
+.site-footer .wrap{display:grid;grid-template-columns:minmax(0,1.2fr) repeat(2,minmax(0,1fr));gap:var(--s5)}
+.site-footer .wordmark strong{color:var(--white)}
+.site-footer h2{font-family:var(--text);font-size:1.05rem;font-weight:700;margin-bottom:var(--s2)}
+.site-footer ul{list-style:none;display:grid;gap:var(--s2)}
+.site-footer a{text-underline-offset:3px}
+.site-footer p{margin-top:var(--s3);font-size:16px}
+.legal{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.25);padding-top:var(--s3);font-size:15px;margin-top:0!important}
+
+@media (max-width:900px){
+  .hero .wrap{grid-template-columns:1fr;gap:var(--s4)}
+  .cluster{max-width:220px;justify-self:start}
+  .site-footer .wrap{grid-template-columns:1fr;gap:var(--s4)}
+}
+@media (max-width:640px){
+  body{font-size:17px}
+  .wrap{padding:0 var(--s3)}
+  .brand img{height:48px}
+  .site-name{font-size:1.2rem;padding-left:var(--s3)}
+  .row{grid-template-columns:1fr;gap:var(--s2)}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .cluster span{animation:none}
+  .btn{transition:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="LWTC Training home">
+      <img data-logo="lwtc-logo.svg" alt="Lorenzo Walker Technical College" height="56">
+    </a>
+    <div class="site-name">Training</div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" id="hero">
+    <div class="wrap">
+      <div id="featured" aria-live="polite">
+        <p class="lead">Loading trainings&hellip;</p>
+      </div>
+      <div class="cluster" aria-hidden="true">
+        <span class="orange"></span><span class="green"></span><span class="gold"></span><span class="blue"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="earlier" id="earlier" hidden aria-labelledby="earlier-title">
+    <div class="wrap">
+      <h2 id="earlier-title">Earlier trainings</h2>
+      <ul class="rows" id="rows"></ul>
+    </div>
+  </section>
+</main>
+
+<noscript><div class="wrap" style="padding-bottom:48px"><p>This page needs JavaScript to list trainings.</p></div></noscript>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <a class="brand" href="https://www.lwtc.edu" aria-label="Lorenzo Walker Technical College website">
+        <img data-logo="lwtc-logo-reversed.svg" data-dark="true" alt="Lorenzo Walker Technical College" height="56">
+      </a>
+      <p>Collier County Public Schools<br>Workforce Education Division<br>Naples, Florida</p>
+    </div>
+    <div>
+      <h2>Links</h2>
+      <ul>
+        <li><a href="https://www.lwtc.edu">Lorenzo Walker Technical College</a></li>
+        <li><a href="https://cte-text-complexity.lwtc.app/">CTE Text Complexity</a></li>
+        <li><a href="https://lwtcapps.github.io/tech_compass/">Program Interest Survey</a></li>
+        <li><a href="https://lwtc-brandguide.lwtc.app/">LWTC Brand Style Sheet</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Contact</h2>
+      <ul>
+        <li>LWTC: <a href="tel:+12393770900">(239) 377-0900</a></li>
+        <li>iTECH: <a href="tel:+12393779900">(239) 377-9900</a></li>
+      </ul>
+    </div>
+    <p class="legal">&copy; 2026 Collier County Public Schools, Workforce Education</p>
+  </div>
+</footer>
+
+<script>
+/* ==================================================================
+   Settings (IT: you should not need to change these)
+================================================================== */
+const FOLDER = 'training-assets';   // folder that holds the training pages
+const GITHUB_REPO = '';             // optional 'owner/repo'; auto-detected on github.io
+const LOGO_BASE = 'https://lwtc-brandguide.lwtc.app/assets/logos/svg/';
+
+/* ==================================================================
+   How trainings are found
+   1. training-assets/manifest.json, built by the GitHub Action on every upload.
+   2. Backup: ask GitHub for the folder listing, then read each file's <head>.
+      GitHub limits this to 60 requests per hour per IP address, so it is
+      only a backup.
+   Each training file supplies its own details in its <head>:
+     <meta name="training-date" content="2026-10-15">   (or a YYYY-MM-DD- filename prefix)
+     <title> or <meta name="training-title">, <meta name="description">,
+     <meta name="training-minutes">, <meta name="training-audience">
+================================================================== */
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+function el(tag, attrs = {}, children = []) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') n.className = v;
+    else if (k === 'text') n.textContent = v;
+    else n.setAttribute(k, v);
+  }
+  [].concat(children).forEach(c => c && n.appendChild(c));
+  return n;
+}
+
+/* ---------- Logos (text wordmark if the files cannot load) ---------- */
+$$('img[data-logo]').forEach(img => {
+  img.addEventListener('error', () => {
+    const mark = el('span', { class: 'wordmark' }, [
+      el('strong', { text: 'LWTC' }),
+      el('span', { text: 'Lorenzo Walker Technical College' })
+    ]);
+    if (img.dataset.dark) mark.style.color = '#fff';
+    img.replaceWith(mark);
+  }, { once: true });
+  img.src = LOGO_BASE + img.dataset.logo;
+});
+
+/* ---------- Dates use the visitor's computer clock ---------- */
+function parseDay(s) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec((s || '').trim());
+  if (!m) return null;
+  const d = new Date(+m[1], +m[2] - 1, +m[3]);
+  return d.getMonth() === +m[2] - 1 ? d : null;
+}
+function startOfToday() {
+  const t = new Date();
+  return new Date(t.getFullYear(), t.getMonth(), t.getDate());
+}
+const daysFromToday = d => Math.round((d - startOfToday()) / 86400000);
+const longDate  = d => d.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+const shortDate = d => d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+
+function relative(d) {
+  const n = daysFromToday(d);
+  if (n === 0) return 'Today';
+  if (n === 1) return 'Tomorrow';
+  if (n > 1) return `In ${n} days`;
+  return '';
+}
+
+/* ---------- Finding trainings ---------- */
+function fromHead(headHtml, file) {
+  const doc = new DOMParser().parseFromString(headHtml, 'text/html');
+  const meta = n => (doc.querySelector(`meta[name="${n}"]`) || {}).content || '';
+  let date = meta('training-date').trim();
+  if (!parseDay(date)) {
+    const m = /^(\d{4}-\d{2}-\d{2})/.exec(file);
+    date = m ? m[1] : '';
+  }
+  return {
+    file,
+    title: meta('training-title').trim() || (doc.title || '').trim() || file.replace(/\.html?$/i, ''),
+    date: parseDay(date) ? date : '',
+    description: meta('description').trim(),
+    minutes: meta('training-minutes').trim(),
+    audience: meta('training-audience').trim()
+  };
+}
+
+async function readHead(url) {
+  const res = await fetch(url, { cache: 'no-cache' });
+  if (!res.ok) throw new Error(`${url}: ${res.status}`);
+  const reader = res.body.getReader();
+  const dec = new TextDecoder();
+  let text = '';
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    text += dec.decode(value, { stream: true });
+    if (/<\/head>/i.test(text) || text.length > 200000) break;
+  }
+  reader.cancel().catch(() => {});
+  return text;
+}
+
+async function loadFromManifest() {
+  const res = await fetch(`${FOLDER}/manifest.json`, { cache: 'no-cache' });
+  if (!res.ok) throw new Error('No manifest');
+  const data = await res.json();
+  if (!Array.isArray(data)) throw new Error('Bad manifest');
+  return data;
+}
+
+async function loadFromGitHub() {
+  let repo = GITHUB_REPO;
+  if (!repo) {
+    const m = location.hostname.match(/^(.+)\.github\.io$/i);
+    if (!m) throw new Error('Not on github.io');
+    const seg = location.pathname.split('/').filter(Boolean)[0];
+    repo = `${m[1]}/${seg && !/\.html?$/i.test(seg) ? seg : m[1] + '.github.io'}`;
+  }
+  const res = await fetch(`https://api.github.com/repos/${repo}/contents/${FOLDER}`);
+  if (!res.ok) throw new Error(`GitHub listing failed (${res.status})`);
+  const files = (await res.json()).filter(f =>
+    f.type === 'file' && /\.html?$/i.test(f.name) && !/^[_.]/.test(f.name));
+  return Promise.all(files.map(async f =>
+    fromHead(await readHead(`${FOLDER}/${encodeURIComponent(f.name)}`), f.name)));
+}
+
+async function loadTrainings() {
+  let list;
+  try { list = await loadFromManifest(); }
+  catch (e) { list = await loadFromGitHub(); }
+  const items = list.map(t => ({ ...t, day: parseDay(t.date) }));
+  /* Newest training date first; trainings without a date go last. */
+  items.sort((a, b) => {
+    if (a.day && b.day) return b.day - a.day || a.title.localeCompare(b.title);
+    if (a.day) return -1;
+    if (b.day) return 1;
+    return a.title.localeCompare(b.title);
+  });
+  return items;
+}
+
+/* ---------- Rendering ---------- */
+const href = t => `${FOLDER}/${encodeURIComponent(t.file)}`;
+const isFuture = t => t.day && daysFromToday(t.day) > 0;
+
+function metaList(t) {
+  const items = [];
+  if (t.minutes) items.push(el('li', { text: `${t.minutes} minutes` }));
+  if (t.audience) items.push(el('li', { text: t.audience }));
+  return el('ul', { class: 'meta' }, items);
+}
+
+function renderFeatured(t) {
+  const box = $('#featured');
+  box.replaceChildren();
+  if (t.day) {
+    const upcoming = isFuture(t);
+    const rel = relative(t.day);
+    box.appendChild(el('div', { class: 'when-row' }, [
+      el('span', { class: `tag ${upcoming ? 'upcoming' : 'current'}`, text: upcoming ? 'Upcoming' : 'Current' }),
+      el('span', { class: 'when', text: longDate(t.day) }),
+      rel ? el('span', { class: 'rel', text: rel }) : null
+    ]));
+  }
+  box.appendChild(el('h1', { text: t.title }));
+  if (t.description) box.appendChild(el('p', { class: 'lead', text: t.description }));
+  box.appendChild(metaList(t));
+  box.appendChild(el('a', { class: 'btn', href: href(t) }, [
+    document.createTextNode('Open training'),
+    el('span', { class: 'sr-only', text: `: ${t.title}` })
+  ]));
+}
+
+function renderRow(t) {
+  const action = el('a', { class: 'btn quiet small', href: href(t) }, [
+    document.createTextNode('Open training'),
+    el('span', { class: 'sr-only', text: `: ${t.title}` })
+  ]);
+  return el('li', { class: 'row' }, [
+    el('div', { class: 'row-date', text: t.day ? shortDate(t.day) : 'Date not set' }),
+    el('div', {}, [
+      isFuture(t) ? el('span', { class: 'tag upcoming', text: 'Upcoming' }) : null,
+      el('h3', { text: t.title }),
+      t.description ? el('p', { text: t.description }) : null,
+      metaList(t)
+    ]),
+    el('div', {}, [action])
+  ]);
+}
+
+function renderMessage(title, body) {
+  $('#featured').replaceChildren(
+    el('div', { class: 'notice' }, [
+      el('h1', { text: title }),
+      el('p', { class: 'lead', text: body })
+    ]));
+}
+
+loadTrainings().then(items => {
+  if (!items.length) {
+    renderMessage('No trainings posted yet', 'New trainings will appear here as soon as they are added. Check back soon.');
+    return;
+  }
+  renderFeatured(items[0]);
+  const rest = items.slice(1);
+  if (rest.length) {
+    $('#rows').replaceChildren(...rest.map(renderRow));
+    $('#earlier').hidden = false;
+  }
+}).catch(err => {
+  console.error(err);
+  const local = location.protocol === 'file:';
+  renderMessage(
+    'Trainings could not be loaded',
+    local
+      ? 'This page has to be opened from the website, not from a saved file. Open it from its github.io address.'
+      : 'Refresh the page. If this keeps happening, contact IT and mention that the training list did not load.');
+});
+</script>
+</body>
+</html>

@@ -72,13 +72,18 @@ h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.1}
 .meta li:first-child{padding-left:0;border-left:0}
 .meta:empty{display:none}
 
-/* Bubble cluster: each square corner points to the center, as in the logo */
-.cluster{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2);width:100%;max-width:300px;justify-self:center}
-.cluster span{aspect-ratio:1;display:block;animation:pop .6s cubic-bezier(.2,1.35,.4,1) both}
-.cluster .orange{border-radius:50% 50% 0 50%;background:linear-gradient(90deg,var(--orange-a),var(--orange-b));transform-origin:100% 100%}
-.cluster .green{border-radius:50% 50% 50% 0;background:linear-gradient(90deg,var(--green-a),var(--green-b));transform-origin:0 100%;animation-delay:.08s}
-.cluster .gold{border-radius:50% 0 50% 50%;background:linear-gradient(90deg,var(--gold-a),var(--gold-b));transform-origin:100% 0;animation-delay:.16s}
-.cluster .blue{border-radius:0 50% 50% 50%;background:linear-gradient(90deg,var(--blue-a),var(--blue-b));transform-origin:0 0;animation-delay:.24s}
+/* Icon beside the featured training: the official LWTC icon art, with CSS
+   bubbles as a fallback if the image files cannot load */
+.icon-slot{width:100%;max-width:300px;justify-self:center}
+.icon-slot img{width:100%;height:auto;display:block;animation:pop .6s cubic-bezier(.2,1.35,.4,1) both}
+.icon-slot.single{max-width:260px}
+.fallback{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
+.fallback.one{grid-template-columns:1fr}
+.fallback span{aspect-ratio:1;display:block;animation:pop .6s cubic-bezier(.2,1.35,.4,1) both}
+.fallback .orange{border-radius:50% 50% 0 50%;background:linear-gradient(90deg,var(--orange-a),var(--orange-b));transform-origin:100% 100%}
+.fallback .green{border-radius:50% 50% 50% 0;background:linear-gradient(90deg,var(--green-a),var(--green-b));transform-origin:0 100%;animation-delay:.08s}
+.fallback .gold{border-radius:50% 0 50% 50%;background:linear-gradient(90deg,var(--gold-a),var(--gold-b));transform-origin:100% 0;animation-delay:.16s}
+.fallback .blue{border-radius:0 50% 50% 50%;background:linear-gradient(90deg,var(--blue-a),var(--blue-b));transform-origin:0 0;animation-delay:.24s}
 @keyframes pop{from{transform:scale(.55);opacity:0}to{transform:scale(1);opacity:1}}
 
 .notice{max-width:36em}
@@ -107,7 +112,7 @@ h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.1}
 
 @media (max-width:900px){
   .hero .wrap{grid-template-columns:1fr;gap:var(--s4)}
-  .cluster{max-width:220px;justify-self:start}
+  .icon-slot,.icon-slot.single{max-width:200px;justify-self:start}
   .site-footer .wrap{grid-template-columns:1fr;gap:var(--s4)}
 }
 @media (max-width:640px){
@@ -119,7 +124,7 @@ h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.1}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .cluster span{animation:none}
+  .icon-slot img,.fallback span{animation:none}
   .btn{transition:none}
 }
 </style>
@@ -142,9 +147,7 @@ h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.1}
       <div id="featured" aria-live="polite">
         <p class="lead">Loading trainings&hellip;</p>
       </div>
-      <div class="cluster" aria-hidden="true">
-        <span class="orange"></span><span class="green"></span><span class="gold"></span><span class="blue"></span>
-      </div>
+      <div class="icon-slot" id="icon-slot" aria-hidden="true"></div>
     </div>
   </section>
 
@@ -193,6 +196,7 @@ h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.1}
 const FOLDER = 'training-assets';   // folder that holds the training pages
 const GITHUB_REPO = '';             // optional 'owner/repo'; auto-detected on github.io
 const LOGO_BASE = 'https://lwtc-brandguide.lwtc.app/assets/logos/svg/';
+const ICON_BASE = 'https://lwtc-brandguide.lwtc.app/assets/icons/svg/';
 
 /* ==================================================================
    How trainings are found
@@ -270,7 +274,8 @@ function fromHead(headHtml, file) {
     date: parseDay(date) ? date : '',
     description: meta('description').trim(),
     minutes: meta('training-minutes').trim(),
-    audience: meta('training-audience').trim()
+    audience: meta('training-audience').trim(),
+    icon: meta('training-icon').trim().toLowerCase()
   };
 }
 
@@ -340,7 +345,34 @@ function metaList(t) {
   return el('ul', { class: 'meta' }, items);
 }
 
+/* ---------- Icon beside the featured training ----------
+   Set <meta name="training-icon"> in a training to choose it:
+   cluster (default), engineering, technology, health or public-service. */
+const ICONS = {
+  'cluster':        { src: LOGO_BASE + 'lwtc-icon-cluster.svg',  hues: ['orange', 'green', 'gold', 'blue'] },
+  'engineering':    { src: ICON_BASE + 'lwtc-bubble-orange.svg', hues: ['orange'] },
+  'technology':     { src: ICON_BASE + 'lwtc-bubble-green.svg',  hues: ['green'] },
+  'health':         { src: ICON_BASE + 'lwtc-bubble-gold.svg',   hues: ['gold'] },
+  'public-service': { src: ICON_BASE + 'lwtc-bubble-blue.svg',   hues: ['blue'] }
+};
+let shownIcon = null;
+function setIcon(name) {
+  const key = ICONS[name] ? name : 'cluster';
+  if (key === shownIcon) return;
+  shownIcon = key;
+  const def = ICONS[key];
+  const slot = $('#icon-slot');
+  slot.classList.toggle('single', key !== 'cluster');
+  const img = el('img', { src: def.src, alt: '' });
+  img.addEventListener('error', () => {
+    const shapes = el('div', { class: `fallback${def.hues.length === 1 ? ' one' : ''}` },
+      def.hues.map(h => el('span', { class: h })));
+    slot.replaceChildren(shapes);
+  }, { once: true });
+  slot.replaceChildren(img);
+}
 function renderFeatured(t) {
+  setIcon(t.icon);
   const box = $('#featured');
   box.replaceChildren();
   if (t.day) {
@@ -379,6 +411,7 @@ function renderRow(t) {
 }
 
 function renderMessage(title, body) {
+  setIcon('cluster');
   $('#featured').replaceChildren(
     el('div', { class: 'notice' }, [
       el('h1', { text: title }),

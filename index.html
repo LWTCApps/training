@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LWTC Training</title>
 <meta name="description" content="Professional development trainings for Lorenzo Walker Technical College faculty and staff.">
-<link rel="icon" href="assets/logos/svg/lwtc-icon-cluster.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Source+Sans+3:wght@400;600;700&display=swap">
@@ -49,6 +48,7 @@ h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.1}
 .tag{display:inline-block;padding:var(--s1) var(--s3);font-weight:700;font-size:16px;color:var(--ink)}
 .tag.current{background:linear-gradient(90deg,var(--green-a),var(--green-b))}
 .tag.upcoming{background:linear-gradient(90deg,var(--gold-a),var(--gold-b))}
+.tag.past{background:#E9E7E6}
 
 /* Header */
 .site-header{border-bottom:1px solid var(--line)}
@@ -154,7 +154,7 @@ h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.1}
 
   <section class="earlier" id="earlier" hidden aria-labelledby="earlier-title">
     <div class="wrap">
-      <h2 id="earlier-title">Earlier trainings</h2>
+      <h2 id="earlier-title">More trainings</h2>
       <ul class="rows" id="rows"></ul>
     </div>
   </section>
@@ -177,7 +177,6 @@ h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.1}
         <li><a href="https://cte-text-complexity.lwtc.app/">CTE Text Complexity</a></li>
         <li><a href="https://lwtcapps.github.io/tech_compass/">Program Interest Survey</a></li>
         <li><a href="https://lwtc-brandguide.lwtc.app/">LWTC Brand Style Sheet</a></li>
-        <li><a href="https://oac.lwtc.app/">LWTC OAC Member Survey</a></li>
       </ul>
     </div>
     <div>
@@ -258,7 +257,19 @@ function relative(d) {
   if (n === 0) return 'Today';
   if (n === 1) return 'Tomorrow';
   if (n > 1) return `In ${n} days`;
+  if (n === -1) return 'Yesterday';
+  if (n >= -30) return `${-n} days ago`;
   return '';
+}
+
+/* Status comes from the visitor's computer date:
+   after today = Upcoming, today = Current, before today = Past. */
+function status(t) {
+  if (!t.day) return null;
+  const n = daysFromToday(t.day);
+  if (n > 0) return { label: 'Upcoming', cls: 'upcoming' };
+  if (n === 0) return { label: 'Current', cls: 'current' };
+  return { label: 'Past', cls: 'past' };
 }
 
 /* ---------- Finding trainings ---------- */
@@ -338,7 +349,6 @@ async function loadTrainings() {
 
 /* ---------- Rendering ---------- */
 const href = t => `${FOLDER}/${encodeURIComponent(t.file)}`;
-const isFuture = t => t.day && daysFromToday(t.day) > 0;
 
 function metaList(t) {
   const items = [];
@@ -378,10 +388,10 @@ function renderFeatured(t) {
   const box = $('#featured');
   box.replaceChildren();
   if (t.day) {
-    const upcoming = isFuture(t);
+    const st = status(t);
     const rel = relative(t.day);
     box.appendChild(el('div', { class: 'when-row' }, [
-      el('span', { class: `tag ${upcoming ? 'upcoming' : 'current'}`, text: upcoming ? 'Upcoming' : 'Current' }),
+      el('span', { class: `tag ${st.cls}`, text: st.label }),
       el('span', { class: 'when', text: longDate(t.day) }),
       rel ? el('span', { class: 'rel', text: rel }) : null
     ]));
@@ -403,7 +413,7 @@ function renderRow(t) {
   return el('li', { class: 'row' }, [
     el('div', { class: 'row-date', text: t.day ? shortDate(t.day) : 'Date not set' }),
     el('div', {}, [
-      isFuture(t) ? el('span', { class: 'tag upcoming', text: 'Upcoming' }) : null,
+      status(t) ? el('span', { class: `tag ${status(t).cls}`, text: status(t).label }) : null,
       el('h3', { text: t.title }),
       t.description ? el('p', { text: t.description }) : null,
       metaList(t)
